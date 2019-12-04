@@ -6,6 +6,7 @@ import { Dispatch } from 'redux';
 
 import TopBar from '@App/components/TopBar';
 import TableView from '@App/components/TableView';
+import Title from '@App/components/Title';
 
 interface AppProps {
 
@@ -29,9 +30,9 @@ const AppContainer = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: center;
   align-items: center;
   flex-direction: column;
+  padding-top: 20px;
 `;
 
 class App extends React.Component<AppProps, AppState> {
@@ -45,6 +46,7 @@ class App extends React.Component<AppProps, AppState> {
         <GlobalStyle />
         <TopBar />
         <AppContainer>
+          <Title>Table view</Title>
           <TableView />
         </AppContainer>
       </>

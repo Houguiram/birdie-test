@@ -1,6 +1,6 @@
 import { applyMiddleware, compose, createStore, GenericStoreEnhancer } from 'redux';
 import createSagaMiddleware from 'redux-saga';
-import createBrowserHistory from 'history/createBrowserHistory';
+import { createBrowserHistory } from 'history';
 import { rootReducer } from '@App/store/reducers';
 import initSaga from '@App/store/sagas';
 

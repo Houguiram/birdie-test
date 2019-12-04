@@ -4,11 +4,8 @@ import { RootState } from '@App/store/reducers';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
-import Title from '@App/components/Title';
-import Logo from '@App/components/Logo';
-import SubTitle from '@App/components/SubTitle';
-
-const LogoUrl = require('../../assets/images/logo-birdie.svg');
+import TopBar from '@App/components/TopBar';
+import TableView from '@App/components/TableView';
 
 interface AppProps {
 
@@ -46,10 +43,9 @@ class App extends React.Component<AppProps, AppState> {
     return (
       <>
         <GlobalStyle />
+        <TopBar />
         <AppContainer>
-          <Logo src={LogoUrl} />
-          <Title>Welcome to the birdie test</Title>
-          <SubTitle>Best of luck!</SubTitle>
+          <TableView />
         </AppContainer>
       </>
     );

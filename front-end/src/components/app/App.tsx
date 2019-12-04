@@ -3,10 +3,11 @@ import styled, { createGlobalStyle } from 'styled-components';
 import { RootState } from '@App/store/reducers';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import { Heading } from 'react-bulma-components';
+import 'react-bulma-components/dist/react-bulma-components.min.css';
 
 import TopBar from '@App/components/TopBar';
 import TableView from '@App/components/TableView';
-import Title from '@App/components/Title';
 
 interface AppProps {
 
@@ -27,12 +28,14 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const AppContainer = styled.div`
-  width: 100%;
+  width: 90%;
   height: 100%;
   display: flex;
   align-items: center;
   flex-direction: column;
-  padding-top: 20px;
+  padding-top: 24px;
+  margin-left: 5%;
+  margin-right: 5%;
 `;
 
 class App extends React.Component<AppProps, AppState> {
@@ -46,7 +49,7 @@ class App extends React.Component<AppProps, AppState> {
         <GlobalStyle />
         <TopBar />
         <AppContainer>
-          <Title>Table view</Title>
+          <Heading>Table view</Heading>
           <TableView />
         </AppContainer>
       </>

@@ -23,17 +23,21 @@ interface AppState {
 
 const GlobalStyle = createGlobalStyle`
   body {
-    height: 100vh;
-    background-color: #F9F9F9;
-    > div {
-      height: 100%;
-    }
+    height: calc(100vh - 3.25rem);
   }
+`;
+
+const Background = styled.div`
+  position: fixed;
+  height: 100vh;
+  width: 100%;
+  background-color: #F9F9F9;
+  z-index: -99999;
 `;
 
 const AppContainer = styled.div`
   width: 90%;
-  height: 100%;
+  height: calc(100% - 3.25rem);
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -56,6 +60,7 @@ class App extends React.Component<AppProps, AppState> {
     return (
       <>
         <GlobalStyle />
+        <Background />
         <TopBar currentTab={this.state.tab} setTab={this.setTab} />
         <AppContainer>
           {this.state.tab === 'TABLE' ? (

@@ -40,5 +40,6 @@
     "@types/styled-components": "^4.1.15",
     "@types/react-vertical-timeline-component": "^2.5.0",
     "typescript": "^3.4.5"
-  }
+  },
+  "proxy": "http://localhost:8000"
 }

@@ -12,6 +12,57 @@ interface PieProps {
   pieData: Array<PieData>;
 }
 
+const allEventTypesStub = [
+  {
+    match: {
+      id: 'ruby'
+    },
+    id: 'dots'
+  },
+  {
+    match: {
+      id: 'c'
+    },
+    id: 'dots'
+  },
+  {
+    match: {
+      id: 'go'
+    },
+    id: 'dots'
+  },
+  {
+    match: {
+      id: 'python'
+    },
+    id: 'dots'
+  },
+  {
+    match: {
+      id: 'scala'
+    },
+    id: 'lines'
+  },
+  {
+    match: {
+      id: 'lisp'
+    },
+    id: 'lines'
+  },
+  {
+    match: {
+      id: 'elixir'
+    },
+    id: 'lines'
+  },
+  {
+    match: {
+      id: 'javascript'
+    },
+    id: 'lines'
+  }
+];
+
 const MyResponsivePie = ({pieData}: PieProps) => (
   <ResponsivePie
     data={pieData}
@@ -56,56 +107,7 @@ const MyResponsivePie = ({pieData}: PieProps) => (
         spacing: 10
       }
     ]}
-    fill={[
-      {
-        match: {
-          id: 'ruby'
-        },
-        id: 'dots'
-      },
-      {
-        match: {
-          id: 'c'
-        },
-        id: 'dots'
-      },
-      {
-        match: {
-          id: 'go'
-        },
-        id: 'dots'
-      },
-      {
-        match: {
-          id: 'python'
-        },
-        id: 'dots'
-      },
-      {
-        match: {
-          id: 'scala'
-        },
-        id: 'lines'
-      },
-      {
-        match: {
-          id: 'lisp'
-        },
-        id: 'lines'
-      },
-      {
-        match: {
-          id: 'elixir'
-        },
-        id: 'lines'
-      },
-      {
-        match: {
-          id: 'javascript'
-        },
-        id: 'lines'
-      }
-    ]}
+    fill={allEventTypesStub}
     legends={[
       {
         anchor: 'bottom',

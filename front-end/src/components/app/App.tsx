@@ -7,9 +7,9 @@ import { Heading } from 'react-bulma-components';
 import 'react-bulma-components/dist/react-bulma-components.min.css';
 
 import TopBar from '@App/components/TopBar';
-import TableView from '@App/components/TableView';
-import TimelineView from '@App/components/TimelineView';
-import GraphsView from '@App/components/GraphsView';
+import TableView from '@App/components/pages/TableView';
+import TimelineView from '@App/components/pages/TimelineView';
+import GraphsView from '@App/components/pages/GraphsView';
 
 export type Tab = 'TABLE' | 'TIMELINE' | 'GRAPHS';
 
@@ -65,9 +65,15 @@ class App extends React.Component<AppProps, AppState> {
             </>
           ) : (
             this.state.tab === 'TIMELINE' ? (
-              <TimelineView />
+              <>
+                <Heading>Timeline view</Heading>
+                <TimelineView />
+              </>
             ) : (
-              <GraphsView />
+              <>
+                <Heading>Graphs view</Heading>
+                <GraphsView />
+              </>
             )
           )}
         </AppContainer>

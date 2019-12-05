@@ -8,13 +8,17 @@ import 'react-bulma-components/dist/react-bulma-components.min.css';
 
 import TopBar from '@App/components/TopBar';
 import TableView from '@App/components/TableView';
+import TimelineView from '@App/components/TimelineView';
+import GraphsView from '@App/components/GraphsView';
+
+export type Tab = 'TABLE' | 'TIMELINE' | 'GRAPHS';
 
 interface AppProps {
 
 }
 
 interface AppState {
-
+  tab: Tab;
 }
 
 const GlobalStyle = createGlobalStyle`
@@ -39,18 +43,33 @@ const AppContainer = styled.div`
 `;
 
 class App extends React.Component<AppProps, AppState> {
-  public constructor(props: AppProps) {
+  constructor(props: AppProps) {
     super(props);
+    this.state = {tab: 'TABLE'};
   }
 
-  public render() {
+  setTab = (newTab: Tab) => {
+    this.setState({tab: newTab});
+  }
+
+  render() {
     return (
       <>
         <GlobalStyle />
-        <TopBar />
+        <TopBar currentTab={this.state.tab} setTab={this.setTab} />
         <AppContainer>
-          <Heading>Table view</Heading>
-          <TableView />
+          {this.state.tab === 'TABLE' ? (
+            <>
+              <Heading>Table view</Heading>
+              <TableView />
+            </>
+          ) : (
+            this.state.tab === 'TIMELINE' ? (
+              <TimelineView />
+            ) : (
+              <GraphsView />
+            )
+          )}
         </AppContainer>
       </>
     );

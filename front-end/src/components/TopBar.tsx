@@ -2,12 +2,18 @@ import * as React from 'react';
 import { Navbar, Tabs } from 'react-bulma-components';
 import Logo from '@App/components/Logo';
 import 'react-bulma-components/dist/react-bulma-components.min.css';
-import { useState } from 'react';
+
+import { Tab } from '@App/components/app/App';
 
 const LogoUrl = require('../assets/images/logo-birdie.svg');
 
-function TopBar() {
-  const [currentTab, setCurrentTab] = useState('currentTable');
+interface TopBarProps {
+  currentTab: Tab;
+  setTab: Function;
+}
+
+function TopBar(props: TopBarProps) {
+  const {currentTab, setTab} = {...props};
   return (
     <Navbar fixed="top">
       <Navbar.Brand>
@@ -17,9 +23,9 @@ function TopBar() {
         <Navbar.Item>
           <Tabs type="toggle-rounded">
             <ul>
-              <TopBarTab name="Table" id="currentTable" currentTab={currentTab} setCurrentTab={setCurrentTab} />
-              <TopBarTab name="Timeline" id="timeline" currentTab={currentTab} setCurrentTab={setCurrentTab} />
-              <TopBarTab name="Graphs" id="graphs" currentTab={currentTab} setCurrentTab={setCurrentTab} />
+              <TopBarTab name="Table" id="TABLE" currentTab={currentTab} setTab={setTab} />
+              <TopBarTab name="Timeline" id="TIMELINE" currentTab={currentTab} setTab={setTab} />
+              <TopBarTab name="Graphs" id="GRAPHS" currentTab={currentTab} setTab={setTab} />
             </ul>
           </Tabs>
         </Navbar.Item>
@@ -28,17 +34,17 @@ function TopBar() {
   );
 }
 
-interface TopBarProps {
+interface TopBarTabProps {
   name: string;
-  id: string;
-  currentTab: string;
-  setCurrentTab: Function;
+  id: Tab;
+  currentTab: Tab;
+  setTab: Function;
 }
 
-function TopBarTab(props: TopBarProps) {
-  const {name, id, currentTab, setCurrentTab} = {...props};
+function TopBarTab(props: TopBarTabProps) {
+  const {name, id, currentTab, setTab} = {...props};
   return (
-    <li className={currentTab === id ? 'is-active' : ''}><a onClick={() => setCurrentTab(id)}>{name}</a></li>
+    <li className={currentTab === id ? 'is-active' : ''}><a onClick={() => setTab(id)}>{name}</a></li>
   );
 }
 

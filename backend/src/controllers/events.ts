@@ -1,21 +1,13 @@
 import * as express from "express";
 
-export const eventController = express.Router();
-const eventTypesStub = [
-  {
-    id: 'Task completed',
-    value: 158
-  },
-  {
-    id: 'Check out',
-    value: 130
-  },
-  {
-    id: 'Check in',
-    value: 40
-  }
-];
+const dbConfig = require("../dbConfig");
+const connection = require("../helpers/connection");
+const query = require("../helpers/query");
 
-eventController.get('/event-types', (_, res) => {
-  res.status(200).json(eventTypesStub);
+export const eventController = express.Router();
+
+eventController.get('/event-types', async (_, res) => {
+  const conn = await connection(dbConfig);
+  const results = await query(conn, 'select event_type, count(*) from events group by event_type');
+  res.status(200).json({results});
 });

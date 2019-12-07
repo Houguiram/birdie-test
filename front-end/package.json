@@ -14,7 +14,8 @@
     "@fortawesome/react-fontawesome": "^0.1.7",
     "react-vertical-timeline-component": "^2.5.0",
     "@nivo/pie": "latest",
-    "axios": "^0.19.0"
+    "axios": "^0.19.0",
+    "change-case": "^4.1.0"
   },
   "scripts": {
     "start": "react-scripts-ts start",

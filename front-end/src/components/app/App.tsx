@@ -10,9 +10,8 @@ import TopBar from '@App/components/TopBar';
 import TableView from '@App/components/pages/TableView';
 import TimelineView from '@App/components/pages/TimelineView';
 import GraphsView from '@App/components/pages/GraphsView';
-import HelloView from '@App/components/pages/HelloView';
 
-export type Tab = 'TABLE' | 'TIMELINE' | 'GRAPHS' | 'HELLO';
+export type Tab = 'TABLE' | 'TIMELINE' | 'GRAPHS';
 
 interface AppProps {
 
@@ -76,18 +75,10 @@ class App extends React.Component<AppProps, AppState> {
                 <TimelineView />
               </>
             ) : (
-              this.state.tab === 'GRAPHS' ? (
-                <>
-                  <Heading>Graphs view</Heading>
-                  <GraphsView />
-                </>
-
-              ) : (
-                <>
-                  <Heading>Hello view</Heading>
-                  <HelloView />
-                </>
-              )
+              <>
+                <Heading>Graphs view</Heading>
+                <GraphsView />
+              </>
             )
           )}
         </AppContainer>

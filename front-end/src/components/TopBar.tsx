@@ -26,7 +26,6 @@ function TopBar(props: TopBarProps) {
               <TopBarTab name="Table" id="TABLE" currentTab={currentTab} setTab={setTab} />
               <TopBarTab name="Timeline" id="TIMELINE" currentTab={currentTab} setTab={setTab} />
               <TopBarTab name="Graphs" id="GRAPHS" currentTab={currentTab} setTab={setTab} />
-              <TopBarTab name="Hello" id="HELLO" currentTab={currentTab} setTab={setTab} />
             </ul>
           </Tabs>
         </Navbar.Item>

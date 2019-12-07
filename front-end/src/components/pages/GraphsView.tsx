@@ -1,71 +1,22 @@
 import * as React from 'react';
-import { ResponsivePie } from '@nivo/pie';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
-type PieData = {
+import { ResponsivePie } from '@nivo/pie';
+import axios from 'axios';
+
+type EventType = {
   id: string;
-  label: string;
   value: number;
-  color: string;
 };
 
 interface PieProps {
-  pieData: Array<PieData>;
+  eventTypes: Array<EventType>;
 }
 
-const allEventTypesStub = [
-  {
-    match: {
-      id: 'ruby'
-    },
-    id: 'dots'
-  },
-  {
-    match: {
-      id: 'c'
-    },
-    id: 'dots'
-  },
-  {
-    match: {
-      id: 'go'
-    },
-    id: 'dots'
-  },
-  {
-    match: {
-      id: 'python'
-    },
-    id: 'dots'
-  },
-  {
-    match: {
-      id: 'scala'
-    },
-    id: 'lines'
-  },
-  {
-    match: {
-      id: 'lisp'
-    },
-    id: 'lines'
-  },
-  {
-    match: {
-      id: 'elixir'
-    },
-    id: 'lines'
-  },
-  {
-    match: {
-      id: 'javascript'
-    },
-    id: 'lines'
-  }
-];
-
-const MyResponsivePie = ({pieData}: PieProps) => (
+const MyResponsivePie = ({eventTypes}: PieProps) => (
   <ResponsivePie
-    data={pieData}
+    data={eventTypes}
     margin={{top: 40, right: 80, bottom: 80, left: 80}}
     innerRadius={0.5}
     padAngle={0.7}
@@ -87,89 +38,45 @@ const MyResponsivePie = ({pieData}: PieProps) => (
     motionStiffness={90}
     motionDamping={15}
     isInteractive={false}
-    defs={[
-      {
-        id: 'dots',
-        type: 'patternDots',
-        background: 'inherit',
-        color: 'rgba(255, 255, 255, 0.3)',
-        size: 4,
-        padding: 1,
-        stagger: true
-      },
-      {
-        id: 'lines',
-        type: 'patternLines',
-        background: 'inherit',
-        color: 'rgba(255, 255, 255, 0.3)',
-        rotation: -45,
-        lineWidth: 6,
-        spacing: 10
-      }
-    ]}
-    fill={allEventTypesStub}
     legends={[
       {
         anchor: 'bottom',
         direction: 'row',
         translateY: 56,
-        itemWidth: 100,
+        itemWidth: 110,
         itemHeight: 18,
-        itemTextColor: '#999',
+        itemTextColor: '#000',
         symbolSize: 18,
         symbolShape: 'circle',
-        effects: [
-          {
-            on: 'hover',
-            style: {
-              itemTextColor: '#000'
-            }
-          }
-        ]
       }
     ]}
   />
 );
 
-const customPieData = [
-  {
-    'id': 'c',
-    'label': 'c',
-    'value': 184,
-    'color': 'hsl(296, 70%, 50%)'
-  },
-  {
-    'id': 'sass',
-    'label': 'sass',
-    'value': 173,
-    'color': 'hsl(96, 70%, 50%)'
-  },
-  {
-    'id': 'haskell',
-    'label': 'haskell',
-    'value': 513,
-    'color': 'hsl(269, 70%, 50%)'
-  },
-  {
-    'id': 'java',
-    'label': 'java',
-    'value': 164,
-    'color': 'hsl(308, 70%, 50%)'
-  },
-  {
-    'id': 'erlang',
-    'label': 'erlang',
-    'value': 30,
-    'color': 'hsl(40, 70%, 50%)'
-  }
-];
-
 function GraphsView() {
+  const [eventTypes, setEventTypes] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  useEffect(
+    () => {
+      const fetchEventTypes = async () => {
+        setIsLoading(true);
+        const result = await axios('/event-types');
+        setEventTypes(result.data);
+        setIsLoading(false);
+      };
+      fetchEventTypes();
+    },
+    []);
   return (
-    <div style={{width: '100%', height: '60vh'}}>
-      <MyResponsivePie pieData={customPieData} />
-    </div>
+    isLoading ? (
+      <div>Loading...</div>
+    ) : (
+      <div style={{width: '100%', height: '60vh'}}>
+        <MyResponsivePie eventTypes={eventTypes} />
+      </div>
+    )
   );
+
 }
 
 export default GraphsView;

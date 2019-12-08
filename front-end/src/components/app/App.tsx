@@ -5,12 +5,14 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { Heading } from 'react-bulma-components';
 import 'react-bulma-components/dist/react-bulma-components.min.css';
+import axios from 'axios';
 
 import TopBar from '@App/components/TopBar';
 import TableView from '@App/components/pages/TableView';
 import TimelineView from '@App/components/pages/TimelineView';
 import GraphsView from '@App/components/pages/GraphsView';
 import SideMenu from '@App/components/SideMenu';
+import ErrorBanner from '@App/components/ErrorBanner';
 
 export type Tab = 'TABLE' | 'TIMELINE' | 'GRAPHS';
 export type CareRecipient = { id: string, name: string };
@@ -23,6 +25,8 @@ interface AppState {
   tab: Tab;
   recipients: Array<CareRecipient>;
   currentRecipientId: string;
+  isLoading: boolean;
+  error?: string;
 }
 
 const GlobalStyle = createGlobalStyle`
@@ -56,9 +60,28 @@ class App extends React.Component<AppProps, AppState> {
     super(props);
     this.state = {
       tab: 'TABLE',
-      recipients: [{id: '1', name: 'Bidule'}, {id: '2', name: 'Machin'}],
-      currentRecipientId: ''
+      recipients: [],
+      currentRecipientId: '',
+      isLoading: false,
+      error: undefined
     };
+  }
+
+  componentDidMount(): void {
+    this.setLoading(true);
+    axios.get('/care-recipients')
+      .then((result) => result.data)
+      .then((data) => this.setRecipients(data.recipients))
+      .catch((e) => this.setError(e.toString()));
+    this.setLoading(false);
+  }
+
+  setLoading = (newIsLoading: boolean) => {
+    this.setState({...this.state, isLoading: newIsLoading});
+  }
+
+  setError = (error: string) => {
+    this.setState({...this.state, error: error});
   }
 
   setTab = (newTab: Tab) => {
@@ -75,38 +98,46 @@ class App extends React.Component<AppProps, AppState> {
 
   render() {
     return (
-      <>
-        <GlobalStyle />
-        <Background />
-        <TopBar />
-        <SideMenu
-          currentTab={this.state.tab}
-          setTab={this.setTab}
-          recipients={this.state.recipients}
-          currentRecipient={this.state.currentRecipientId}
-          setCurrentRecipient={this.setCurrentRecipient}
-        />
-        <AppContainer>
-          {this.state.tab === 'TABLE' ? (
-            <>
-              <Heading>Table view</Heading>
-              <TableView />
-            </>
-          ) : (
-            this.state.tab === 'TIMELINE' ? (
-              <>
-                <Heading>Timeline view</Heading>
-                <TimelineView />
-              </>
-            ) : (
-              <>
-                <Heading>Graphs view</Heading>
-                <GraphsView />
-              </>
-            )
-          )}
-        </AppContainer>
-      </>
+      this.state.isLoading ? (
+        <div>Loading...</div>
+      ) : (
+        this.state.error ? (
+          <ErrorBanner message={this.state.error} />
+        ) : (
+          <>
+            <GlobalStyle />
+            <Background />
+            <TopBar />
+            <SideMenu
+              currentTab={this.state.tab}
+              setTab={this.setTab}
+              recipients={this.state.recipients}
+              currentRecipient={this.state.currentRecipientId}
+              setCurrentRecipient={this.setCurrentRecipient}
+            />
+            <AppContainer>
+              {this.state.tab === 'TABLE' ? (
+                <>
+                  <Heading>Table view</Heading>
+                  <TableView />
+                </>
+              ) : (
+                this.state.tab === 'TIMELINE' ? (
+                  <>
+                    <Heading>Timeline view</Heading>
+                    <TimelineView />
+                  </>
+                ) : (
+                  <>
+                    <Heading>Graphs view</Heading>
+                    <GraphsView />
+                  </>
+                )
+              )}
+            </AppContainer>
+          </>
+        )
+      )
     );
   }
 }

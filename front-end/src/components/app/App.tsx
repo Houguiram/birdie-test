@@ -69,7 +69,7 @@ class App extends React.Component<AppProps, AppState> {
 
   componentDidMount(): void {
     this.setLoading(true);
-    axios.get('/care-recipients')
+    axios.get('/recipients')
       .then((result) => result.data)
       .then((data) => this.setRecipients(data.recipients))
       .catch((e) => this.setError(e.toString()));

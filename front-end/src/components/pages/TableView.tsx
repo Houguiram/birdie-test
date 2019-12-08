@@ -5,53 +5,61 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import axios from 'axios';
 import { sentenceCase } from 'sentence-case';
+import ErrorBanner from '@App/components/ErrorBanner';
 
 type Event = {
   id: string;
   caregiver_id: string;
-  care_recipient_id: string;
   timestamp: string;
   event_type: string;
 };
 
-function TableView() {
+function TableView({recipientId}: { recipientId: string }) {
   const [events, setEvents] = useState([] as Array<Event>);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(undefined);
   useEffect(
     () => {
       const fetchEvents = async () => {
         setIsLoading(true);
-        const result = await axios('/events');
+        const result = await axios('/recipients/' + recipientId + '/events');
         setEvents(result.data.results);
         setIsLoading(false);
       };
-      fetchEvents();
+      try {
+        fetchEvents();
+      } catch (e) {
+        setError(e.toString());
+        setIsLoading(false);
+      }
     },
-    []);
+    [recipientId]);
   return (
     isLoading ? (
       <div>Loading...</div>
     ) : (
-      <Table>
-        <thead>
-        <tr>
-          <th>Care recipient</th>
-          <th>Event type</th>
-          <th>Time</th>
-          <th>Caregiver</th>
-        </tr>
-        </thead>
-        <tbody>
-        {events.map(event => (
-          <tr key={event.id}>
-            <th>{event.care_recipient_id}</th>
-            <td>{sentenceCase(event.event_type)}</td>
-            <td>{event.timestamp}</td>
-            <th>{event.caregiver_id}</th>
+      error ? (
+        <ErrorBanner message={error} />
+      ) : (
+        <Table>
+          <thead>
+          <tr>
+            <th>Event type</th>
+            <th>Time</th>
+            <th>Caregiver</th>
           </tr>
-        ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+          {events.map(event => (
+            <tr key={event.id}>
+              <th>{sentenceCase(event.event_type)}</th>
+              <td>{event.timestamp}</td>
+              <td>{event.caregiver_id}</td>
+            </tr>
+          ))}
+          </tbody>
+        </Table>
+      )
     )
   );
 }

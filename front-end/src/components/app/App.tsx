@@ -72,6 +72,7 @@ class App extends React.Component<AppProps, AppState> {
     axios.get('/recipients')
       .then((result) => result.data)
       .then((data) => this.setRecipients(data.recipients))
+      .then((_) => this.setCurrentRecipient(this.state.recipients[0].id))
       .catch((e) => this.setError(e.toString()));
     this.setLoading(false);
   }
@@ -98,7 +99,7 @@ class App extends React.Component<AppProps, AppState> {
 
   render() {
     return (
-      this.state.isLoading ? (
+      this.state.isLoading || !this.state.currentRecipientId ? (
         <div>Loading...</div>
       ) : (
         this.state.error ? (
@@ -118,18 +119,18 @@ class App extends React.Component<AppProps, AppState> {
             <AppContainer>
               {this.state.tab === 'TABLE' ? (
                 <>
-                  <Heading>Table view</Heading>
-                  <TableView />
+                  <Heading>All events</Heading>
+                  <TableView recipientId={this.state.currentRecipientId} />
                 </>
               ) : (
                 this.state.tab === 'TIMELINE' ? (
                   <>
-                    <Heading>Timeline view</Heading>
+                    <Heading>Visits timeline</Heading>
                     <TimelineView />
                   </>
                 ) : (
                   <>
-                    <Heading>Graphs view</Heading>
+                    <Heading>Graphs</Heading>
                     <GraphsView />
                   </>
                 )

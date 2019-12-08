@@ -10,8 +10,10 @@ import TopBar from '@App/components/TopBar';
 import TableView from '@App/components/pages/TableView';
 import TimelineView from '@App/components/pages/TimelineView';
 import GraphsView from '@App/components/pages/GraphsView';
+import SideMenu from '@App/components/SideMenu';
 
 export type Tab = 'TABLE' | 'TIMELINE' | 'GRAPHS';
+export type CareRecipient = { id: string, name: string };
 
 interface AppProps {
 
@@ -19,6 +21,8 @@ interface AppProps {
 
 interface AppState {
   tab: Tab;
+  recipients: Array<CareRecipient>;
+  currentRecipientId: string;
 }
 
 const GlobalStyle = createGlobalStyle`
@@ -36,7 +40,7 @@ const Background = styled.div`
 `;
 
 const AppContainer = styled.div`
-  width: 90%;
+  width: 75%;
   height: calc(100% - 3.25rem);
   display: flex;
   align-items: center;
@@ -44,16 +48,29 @@ const AppContainer = styled.div`
   padding-top: 24px;
   margin-left: 5%;
   margin-right: 5%;
+  float: right;
 `;
 
 class App extends React.Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
-    this.state = {tab: 'TABLE'};
+    this.state = {
+      tab: 'TABLE',
+      recipients: [{id: '1', name: 'Bidule'}, {id: '2', name: 'Machin'}],
+      currentRecipientId: ''
+    };
   }
 
   setTab = (newTab: Tab) => {
-    this.setState({tab: newTab});
+    this.setState({...this.state, tab: newTab});
+  }
+
+  setRecipients = (newRecipients: Array<CareRecipient>) => {
+    this.setState({...this.state, recipients: newRecipients});
+  }
+
+  setCurrentRecipient = (recipientId: string) => {
+    this.setState({...this.state, currentRecipientId: recipientId});
   }
 
   render() {
@@ -61,7 +78,14 @@ class App extends React.Component<AppProps, AppState> {
       <>
         <GlobalStyle />
         <Background />
-        <TopBar currentTab={this.state.tab} setTab={this.setTab} />
+        <TopBar />
+        <SideMenu
+          currentTab={this.state.tab}
+          setTab={this.setTab}
+          recipients={this.state.recipients}
+          currentRecipient={this.state.currentRecipientId}
+          setCurrentRecipient={this.setCurrentRecipient}
+        />
         <AppContainer>
           {this.state.tab === 'TABLE' ? (
             <>

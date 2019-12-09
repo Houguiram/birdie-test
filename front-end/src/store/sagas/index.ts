@@ -2,12 +2,12 @@ import { call, put, takeLatest, all } from 'redux-saga/effects';
 import axios from 'axios';
 
 import {
+  EVENTS_FETCHED,
   FETCH_EVENTS,
   FETCH_SUMMARY,
-  FetchEventsAction,
-  FetchRecipientsAction,
-  FetchSummaryAction,
-  RECIPIENTS_FETCHED, SUMMARY_FETCHED
+  RecipientsFetchedAction,
+  SummaryFetchedAction,
+  RECIPIENTS_FETCHED, SUMMARY_FETCHED, FetchEventsAction
 } from '../types';
 import { CareRecipient, RawEventType } from '@App/types';
 import { sentenceCase } from 'sentence-case';
@@ -18,13 +18,13 @@ function* fetchRecipients() {
     yield put({
       type: RECIPIENTS_FETCHED.SUCCESS,
       payload: recipientsResults.data.recipients as Array<CareRecipient>
-    } as FetchRecipientsAction);
+    } as RecipientsFetchedAction);
   } catch (e) {
     yield put({type: RECIPIENTS_FETCHED.FAIL, payload: e.message});
   }
 }
 
-function* fetchEventTypesSummary(action: FetchSummaryAction) {
+function* fetchEventTypesSummary(action: SummaryFetchedAction) {
   try {
     const evTypSumResults = yield call(axios.get, `/recipients/${action.payload}/summary`);
     yield put({
@@ -44,10 +44,11 @@ function* watchFetchSummary() {
 
 function* fetchEvents(action: FetchEventsAction) {
   try {
-    const eventsResults = yield call(axios.get, `/recipients/${action.payload}/events`);
-    yield put({type: 'EVENTS_FETCH_SUCCEEDED', events: eventsResults.data.eventTypes});
+    const query = `/recipients/${action.payload.recipientId}/events/${action.payload.pageNb}`;
+    const eventsResults = yield call(axios.get, query);
+    yield put({type: EVENTS_FETCHED.SUCCESS, payload: eventsResults.data.results});
   } catch (e) {
-    yield put({type: 'EVENTS_FETCH_FAILED', message: e.message});
+    yield put({type: EVENTS_FETCHED.FAIL, payload: e.message});
   }
 }
 

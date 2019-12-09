@@ -1,10 +1,11 @@
 import {
+  FETCH_EVENTS,
   FETCH_SUMMARY,
-  FetchSummaryAction,
+  SummaryFetchedAction,
   SET_RECIPIENT,
   SET_VIEW,
   SetRecipientAction,
-  SetViewAction
+  SetViewAction, FetchEventsAction
 } from '@App/store/types';
 import { CareRecipientId, Tab } from '@App/types';
 
@@ -18,7 +19,15 @@ export const setRecipient = (recipientId: CareRecipientId): SetRecipientAction =
   payload: recipientId
 });
 
-export const fetchSummary = (recipientId: CareRecipientId): FetchSummaryAction => ({
+export const fetchSummary = (recipientId: CareRecipientId): SummaryFetchedAction => ({
   type: FETCH_SUMMARY,
   payload: recipientId
+});
+
+export const fetchEvents = (recipientId: CareRecipientId, pageNb: number): FetchEventsAction => ({
+  type: FETCH_EVENTS,
+  payload: {
+    recipientId: recipientId,
+    pageNb: pageNb
+  }
 });

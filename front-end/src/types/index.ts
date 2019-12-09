@@ -12,3 +12,11 @@ export type RawEventType = {
   event_type: string;
   'count(*)': number;
 };
+
+export type Event = {
+  id: string;
+  caregiver_id: string;
+  timestamp: string;
+  event_type: string;
+  payload: string;
+};

@@ -17,9 +17,9 @@ recipientController.get('/recipients', async (_, res) => {
   conn.end();
 });
 
-recipientController.get('/recipients/:recipientId/events', async (req, res) => {
+recipientController.get('/recipients/:recipientId/events/:pageNb', async (req, res) => {
   const conn = await connection(dbConfig);
-  const results = await query(conn, `select id, caregiver_id, timestamp, event_type from events where care_recipient_id = '${req.params.recipientId}' order by timestamp  asc`);
+  const results = await query(conn, `select id, caregiver_id, timestamp, event_type, payload from events where care_recipient_id = '${req.params.recipientId}' order by timestamp asc limit 50 offset ${(Number(req.params.pageNb) - 1) * 50}`);
   res.status(200).json({results});
   conn.end();
 });

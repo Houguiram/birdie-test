@@ -1,4 +1,4 @@
-import { CareRecipient, CareRecipientId, EventType, Tab } from '@App/types';
+import { CareRecipient, CareRecipientId, EventType, Tab, Event } from '@App/types';
 
 export const SET_RECIPIENT = 'SET_RECIPIENT';
 export const SET_VIEW = 'SET_VIEW';
@@ -16,19 +16,32 @@ export const SUMMARY_FETCHED = {
   FAIL: 'SUMMARY_FETCH_FAILED'
 };
 
-export interface FetchRecipientsAction {
+export const EVENTS_FETCHED = {
+  SUCCESS: 'EVENTS_FETCH_SUCCEEDED',
+  FAIL: 'EVENTS_FETCH_FAILED'
+};
+
+export interface RecipientsFetchedAction {
   type: typeof RECIPIENTS_FETCHED.SUCCESS;
   payload: Array<CareRecipient> | string;
 }
 
-export interface FetchSummaryAction {
+export interface SummaryFetchedAction {
   type: typeof SUMMARY_FETCHED.SUCCESS;
   payload: Array<EventType> | string;
 }
 
+export interface EventsFetchedAction {
+  type: typeof EVENTS_FETCHED.SUCCESS;
+  payload: Array<Event> | string;
+}
+
 export interface FetchEventsAction {
   type: typeof FETCH_EVENTS;
-  payload: CareRecipientId;
+  payload: {
+    recipientId: CareRecipientId;
+    pageNb: number;
+  };
 }
 
 export interface SetViewAction {

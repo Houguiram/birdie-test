@@ -104,7 +104,7 @@ class App extends React.Component<AppProps, AppState> {
                 this.props.currentView === 'TABLE' ? (
                   <>
                     <Heading>All events</Heading>
-                    <TableView recipientId={this.props.currentRecipientId} />
+                    <TableView />
                   </>
                 ) : (
                   this.props.currentView === 'TIMELINE' ? (

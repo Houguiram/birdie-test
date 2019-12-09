@@ -1,67 +1,85 @@
 import * as React from 'react';
-import { Table } from 'react-bulma-components';
+import { Table, Pagination } from 'react-bulma-components';
 import 'react-bulma-components/dist/react-bulma-components.min.css';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from 'react';
 import { sentenceCase } from 'sentence-case';
 import ErrorBanner from '@App/components/ErrorBanner';
+import { RootState } from '@App/store/reducers';
+import { getCurrentRecipientId, getEvents } from '@App/store/selectors';
+import { Dispatch } from 'redux';
+import { CareRecipientId, Event } from '@App/types';
+import { fetchEvents } from '@App/store/actions';
+import { connect } from 'react-redux';
 
-type Event = {
-  id: string;
-  caregiver_id: string;
-  timestamp: string;
-  event_type: string;
-};
+interface TableViewProps {
+  events: Array<Event>;
+  currentRecipientId: CareRecipientId;
+  fetchEvents: Function;
+}
 
-function TableView({recipientId}: { recipientId: string }) {
-  const [events, setEvents] = useState([] as Array<Event>);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(undefined);
+function TableView({...props}: TableViewProps) {
+  const [pageNb, setPageNb] = useState(1);
   useEffect(
     () => {
-      const fetchEvents = async () => {
-        setIsLoading(true);
-        const result = await axios('/recipients/' + recipientId + '/events');
-        setEvents(result.data.results);
-        setIsLoading(false);
-      };
-      try {
-        fetchEvents();
-      } catch (e) {
-        setError(e.toString());
-        setIsLoading(false);
-      }
+      props.fetchEvents(props.currentRecipientId, pageNb);
     },
-    [recipientId]);
+    [props.currentRecipientId, pageNb]);
   return (
-    isLoading ? (
+    !props.events ? (
       <div>Loading...</div>
     ) : (
-      error ? (
-        <ErrorBanner message={error} />
+      typeof props.events === 'string' ? (
+        <ErrorBanner message={props.events} />
       ) : (
-        <Table>
-          <thead>
-          <tr>
-            <th>Event type</th>
-            <th>Time</th>
-            <th>Caregiver</th>
-          </tr>
-          </thead>
-          <tbody>
-          {events.map(event => (
-            <tr key={event.id}>
-              <th>{sentenceCase(event.event_type)}</th>
-              <td>{event.timestamp}</td>
-              <td>{event.caregiver_id}</td>
+        <>
+          <Pagination current={pageNb} total={10} delta={1} onChange={(nav) => setPageNb(nav as unknown as number)} />
+          <div style={{paddingTop: 20}} />
+          <Table style={{tableLayout: 'fixed'}}>
+            <thead>
+            <tr>
+              <th>Event</th>
+              <th>Time</th>
+              <th>Caregiver</th>
             </tr>
-          ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+            {props.events.map(event => (
+              <tr key={event.id}>
+                <td>
+                  <b>{sentenceCase(event.event_type)}</b>
+                  <ul style={{listStyleType: 'disc', paddingLeft: '2em', overflow: 'hidden'}}>
+                    {Object.keys(JSON.parse(event.payload)).map((property: string) => {
+                      if (property !== 'timestamp' &&
+                        property !== 'event_type' &&
+                        typeof JSON.parse(event.payload)[property] !== 'object' &&
+                        !property.includes('id')) {
+                        return <li key={property}><b>{sentenceCase(property)}: </b>{JSON.parse(event.payload)[property]}
+                        </li>;
+                      } else {
+                        return null;
+                      }
+                    })}
+                  </ul>
+                </td>
+                <td>{event.timestamp}</td>
+                <td>{event.caregiver_id}</td>
+              </tr>
+            ))}
+            </tbody>
+          </Table>
+        </>
       )
     )
   );
 }
 
-export default TableView;
+const mapStateToProps = (state: RootState, ownProps: object) => ({
+  events: getEvents(state),
+  currentRecipientId: getCurrentRecipientId(state),
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<RootState>) => ({
+  fetchEvents: (recipientId: CareRecipientId, pageNb: number) => dispatch(fetchEvents(recipientId, pageNb)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(TableView) as React.ComponentClass<{}>;

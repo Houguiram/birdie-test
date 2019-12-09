@@ -23,3 +23,10 @@ recipientController.get('/recipients/:recipientId/events', async (req, res) => {
   res.status(200).json({results});
   conn.end();
 });
+
+recipientController.get('/recipients/:recipientId/summary', async (req, res) => {
+  const conn = await connection(dbConfig);
+  const results = await query(conn, `select event_type, count(*) from events where care_recipient_id = '${req.params.recipientId}' group by event_type`);
+  res.status(200).json({results});
+  conn.end();
+});

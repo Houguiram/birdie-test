@@ -7,9 +7,10 @@ import {
   FetchEventsAction,
   FetchRecipientsAction,
   FetchSummaryAction,
-  RECIPIENTS_FETCHED
+  RECIPIENTS_FETCHED, SUMMARY_FETCHED
 } from '../types';
-import { CareRecipient } from '@App/types';
+import { CareRecipient, RawEventType } from '@App/types';
+import { sentenceCase } from 'sentence-case';
 
 function* fetchRecipients() {
   try {
@@ -26,9 +27,14 @@ function* fetchRecipients() {
 function* fetchEventTypesSummary(action: FetchSummaryAction) {
   try {
     const evTypSumResults = yield call(axios.get, `/recipients/${action.payload}/summary`);
-    yield put({type: 'SUMMARY_FETCH_SUCCEEDED', eventTypes: evTypSumResults.data.eventTypes});
+    yield put({
+      type: SUMMARY_FETCHED.SUCCESS, payload: evTypSumResults.data.results.map((evTyp: RawEventType) => ({
+        id: sentenceCase(evTyp.event_type),
+        value: evTyp['count(*)']
+      }))
+    });
   } catch (e) {
-    yield put({type: 'SUMMARY_FETCH_FAILED', message: e.message});
+    yield put({type: SUMMARY_FETCHED.FAIL, payload: e.message});
   }
 }
 

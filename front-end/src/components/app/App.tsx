@@ -114,7 +114,7 @@ class App extends React.Component<AppProps, AppState> {
                     </>
                   ) : (
                     <>
-                      <Heading>Graphs</Heading>
+                      <Heading>Summary</Heading>
                       <GraphsView />
                     </>
                   )

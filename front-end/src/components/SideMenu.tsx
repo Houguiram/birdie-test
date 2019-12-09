@@ -45,7 +45,7 @@ function SideMenu({currentTab, recipients, currentRecipient, setCurrentRecipient
             All events
           </Menu.List.Item>
           <Menu.List.Item active={currentTab === 'GRAPHS'} onClick={() => setTab('GRAPHS')}>
-            Graphs
+            Summary
           </Menu.List.Item>
         </Menu.List>
       </Menu>

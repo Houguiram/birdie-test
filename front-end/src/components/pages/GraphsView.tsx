@@ -1,15 +1,13 @@
 import * as React from 'react';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { connect } from 'react-redux';
 
 import { ResponsivePie } from '@nivo/pie';
-import axios from 'axios';
-import { sentenceCase } from 'change-case';
-
-type EventType = {
-  id: string;
-  value: number;
-};
+import { CareRecipientId, EventType } from '@App/types';
+import { getCurrentRecipientId, getSummary } from '@App/store/selectors';
+import { RootState } from '@App/store/reducers';
+import { Dispatch } from 'redux';
+import { fetchSummary } from '@App/store/actions';
+import { useEffect } from 'react';
 
 interface PieProps {
   eventTypes: Array<EventType>;
@@ -43,38 +41,37 @@ const MyResponsivePie = ({eventTypes}: PieProps) => (
   />
 );
 
-type RawEventType = {
-  event_type: string;
-  'count(*)': number;
-};
+interface GraphsViewProps {
+  eventTypes: Array<EventType>;
+  currentRecipientId: CareRecipientId;
+  fetchSummary: Function;
+}
 
-function GraphsView() {
-  const [eventTypes, setEventTypes] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+function GraphsView({...props}: GraphsViewProps) {
   useEffect(
     () => {
-      const fetchEventTypes = async () => {
-        setIsLoading(true);
-        const result = await axios('/event-types');
-        setEventTypes(result.data.results.map((evTyp: RawEventType) => ({
-          id: sentenceCase(evTyp.event_type),
-          value: evTyp['count(*)']
-        })));
-        setIsLoading(false);
-      };
-      fetchEventTypes();
+      props.fetchSummary(props.currentRecipientId);
     },
-    []);
+    [props.currentRecipientId]);
   return (
-    isLoading ? (
+    !props.eventTypes ? (
       <div>Loading...</div>
     ) : (
       <div style={{width: '100%', height: '75vh'}}>
-        <MyResponsivePie eventTypes={eventTypes} />
+        <MyResponsivePie eventTypes={props.eventTypes} />
       </div>
     )
   );
 
 }
 
-export default GraphsView;
+const mapStateToProps = (state: RootState, ownProps: object) => ({
+  eventTypes: getSummary(state),
+  currentRecipientId: getCurrentRecipientId(state),
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<RootState>) => ({
+  fetchSummary: (recipientId: CareRecipientId) => dispatch(fetchSummary(recipientId)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(GraphsView) as React.ComponentClass<{}>;

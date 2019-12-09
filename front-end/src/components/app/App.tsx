@@ -17,17 +17,17 @@ import SideMenu from '@App/components/SideMenu';
 import ErrorBanner from '@App/components/ErrorBanner';
 
 import { Tab, CareRecipient, CareRecipientId } from '@App/types';
-import { setView } from '@App/store/actions';
+import { setRecipient, setView } from '@App/store/actions';
 
 interface AppProps {
   currentRecipientId: CareRecipientId;
   currentView: Tab;
   setView: Function;
+  setCurrentRecipientId: Function;
 }
 
 interface AppState {
   recipients: Array<CareRecipient>;
-  currentRecipientId: string;
   isLoading: boolean;
   error?: string;
 }
@@ -63,7 +63,6 @@ class App extends React.Component<AppProps, AppState> {
     super(props);
     this.state = {
       recipients: [],
-      currentRecipientId: '',
       isLoading: false,
       error: undefined
     };
@@ -74,7 +73,6 @@ class App extends React.Component<AppProps, AppState> {
     axios.get('/recipients')
       .then((result) => result.data)
       .then((data) => this.setRecipients(data.recipients))
-      .then((_) => this.setCurrentRecipient(this.state.recipients[0].id))
       .catch((e) => this.setError(e.toString()));
     this.setLoading(false);
   }
@@ -87,21 +85,13 @@ class App extends React.Component<AppProps, AppState> {
     this.setState({...this.state, error: error});
   }
 
-  // setTab = (newTab: Tab) => {
-  //   this.setState({...this.state, tab: newTab});
-  // }
-
   setRecipients = (newRecipients: Array<CareRecipient>) => {
     this.setState({...this.state, recipients: newRecipients});
   }
 
-  setCurrentRecipient = (recipientId: string) => {
-    this.setState({...this.state, currentRecipientId: recipientId});
-  }
-
   render() {
     return (
-      this.state.isLoading || !this.state.currentRecipientId ? (
+      this.state.isLoading ? (
         <div>Loading...</div>
       ) : (
         this.state.error ? (
@@ -115,14 +105,14 @@ class App extends React.Component<AppProps, AppState> {
               currentTab={this.props.currentView}
               setTab={(view: Tab) => this.props.setView(view)}
               recipients={this.state.recipients}
-              currentRecipient={this.state.currentRecipientId}
-              setCurrentRecipient={this.setCurrentRecipient}
+              currentRecipient={this.props.currentRecipientId}
+              setCurrentRecipient={(id: CareRecipientId) => this.props.setCurrentRecipientId(id)}
             />
             <AppContainer>
               {this.props.currentView === 'TABLE' ? (
                 <>
                   <Heading>All events</Heading>
-                  <TableView recipientId={this.state.currentRecipientId} />
+                  <TableView recipientId={this.props.currentRecipientId} />
                 </>
               ) : (
                 this.props.currentView === 'TIMELINE' ? (
@@ -151,7 +141,8 @@ const mapStateToProps = (state: RootState, ownProps: object) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootState>) => ({
-  setView: (view: Tab) => dispatch(setView(view))
+  setView: (view: Tab) => dispatch(setView(view)),
+  setCurrentRecipientId: (id: CareRecipientId) => dispatch(setRecipient(id))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App) as React.ComponentClass<{}>;

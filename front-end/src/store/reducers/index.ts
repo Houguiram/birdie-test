@@ -5,7 +5,7 @@ import { CareRecipient, CareRecipientId, Tab } from '@App/types';
 
 export type RootState = Readonly<{
   careRecipients: Array<CareRecipient>,
-  currentRecipientId: CareRecipientId,
+  currentRecipient: CareRecipientId,
   visibleTab: Tab,
   eventTypes: Array<{id: string, value: number}>,
   events: Array<{}>

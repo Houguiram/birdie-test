@@ -1,7 +1,7 @@
 import { Event } from '@App/types';
-import { EVENTS_FETCHED, FetchEventsAction } from '../types';
+import { EVENTS_FETCHED, EventsFetchedAction } from '../types';
 
-const events = (state = [] as Array<Event>, action: FetchEventsAction) => {
+const events = (state = [] as Array<Event>, action: EventsFetchedAction) => {
   switch (action.type) {
     case EVENTS_FETCHED.SUCCESS:
       return action.payload;

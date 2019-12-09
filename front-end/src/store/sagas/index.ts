@@ -5,10 +5,9 @@ import {
   EVENTS_FETCHED,
   FETCH_EVENTS,
   FETCH_SUMMARY,
-  FetchEventsAction,
-  FetchRecipientsAction,
-  FetchSummaryAction,
-  RECIPIENTS_FETCHED, SUMMARY_FETCHED
+  RecipientsFetchedAction,
+  SummaryFetchedAction,
+  RECIPIENTS_FETCHED, SUMMARY_FETCHED, FetchEventsAction
 } from '../types';
 import { CareRecipient, RawEventType } from '@App/types';
 import { sentenceCase } from 'sentence-case';
@@ -19,13 +18,13 @@ function* fetchRecipients() {
     yield put({
       type: RECIPIENTS_FETCHED.SUCCESS,
       payload: recipientsResults.data.recipients as Array<CareRecipient>
-    } as FetchRecipientsAction);
+    } as RecipientsFetchedAction);
   } catch (e) {
     yield put({type: RECIPIENTS_FETCHED.FAIL, payload: e.message});
   }
 }
 
-function* fetchEventTypesSummary(action: FetchSummaryAction) {
+function* fetchEventTypesSummary(action: SummaryFetchedAction) {
   try {
     const evTypSumResults = yield call(axios.get, `/recipients/${action.payload}/summary`);
     yield put({
@@ -45,7 +44,8 @@ function* watchFetchSummary() {
 
 function* fetchEvents(action: FetchEventsAction) {
   try {
-    const eventsResults = yield call(axios.get, `/recipients/${action.payload}/events`);
+    const query = `/recipients/${action.payload.recipientId}/events/${action.payload.pageNb}`;
+    const eventsResults = yield call(axios.get, query);
     yield put({type: EVENTS_FETCHED.SUCCESS, payload: eventsResults.data.results});
   } catch (e) {
     yield put({type: EVENTS_FETCHED.FAIL, payload: e.message});

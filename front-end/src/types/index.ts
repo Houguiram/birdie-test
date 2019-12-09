@@ -18,4 +18,5 @@ export type Event = {
   caregiver_id: string;
   timestamp: string;
   event_type: string;
+  payload: string;
 };

@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Table } from 'react-bulma-components';
+import { Table, Pagination } from 'react-bulma-components';
 import 'react-bulma-components/dist/react-bulma-components.min.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { sentenceCase } from 'sentence-case';
 import ErrorBanner from '@App/components/ErrorBanner';
 import { RootState } from '@App/store/reducers';
@@ -18,11 +18,12 @@ interface TableViewProps {
 }
 
 function TableView({...props}: TableViewProps) {
+  const [pageNb, setPageNb] = useState(1);
   useEffect(
     () => {
-      props.fetchEvents(props.currentRecipientId);
+      props.fetchEvents(props.currentRecipientId, pageNb);
     },
-    [props.currentRecipientId]);
+    [props.currentRecipientId, pageNb]);
   return (
     !props.events ? (
       <div>Loading...</div>
@@ -30,24 +31,43 @@ function TableView({...props}: TableViewProps) {
       typeof props.events === 'string' ? (
         <ErrorBanner message={props.events} />
       ) : (
-        <Table>
-          <thead>
-          <tr>
-            <th>Event type</th>
-            <th>Time</th>
-            <th>Caregiver</th>
-          </tr>
-          </thead>
-          <tbody>
-          {props.events.map(event => (
-            <tr key={event.id}>
-              <th>{sentenceCase(event.event_type)}</th>
-              <td>{event.timestamp}</td>
-              <td>{event.caregiver_id}</td>
+        <>
+          <Pagination current={pageNb} total={10} delta={1} onChange={(nav) => setPageNb(nav as unknown as number)} />
+          <div style={{paddingTop: 20}} />
+          <Table style={{tableLayout: 'fixed'}}>
+            <thead>
+            <tr>
+              <th>Event</th>
+              <th>Time</th>
+              <th>Caregiver</th>
             </tr>
-          ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+            {props.events.map(event => (
+              <tr key={event.id}>
+                <td>
+                  <b>{sentenceCase(event.event_type)}</b>
+                  <ul style={{listStyleType: 'disc', paddingLeft: '2em', overflow: 'hidden'}}>
+                    {Object.keys(JSON.parse(event.payload)).map((property: string) => {
+                      if (property !== 'timestamp' &&
+                        property !== 'event_type' &&
+                        typeof JSON.parse(event.payload)[property] !== 'object' &&
+                        !property.includes('id')) {
+                        return <li key={property}><b>{sentenceCase(property)}: </b>{JSON.parse(event.payload)[property]}
+                        </li>;
+                      } else {
+                        return null;
+                      }
+                    })}
+                  </ul>
+                </td>
+                <td>{event.timestamp}</td>
+                <td>{event.caregiver_id}</td>
+              </tr>
+            ))}
+            </tbody>
+          </Table>
+        </>
       )
     )
   );
@@ -59,7 +79,7 @@ const mapStateToProps = (state: RootState, ownProps: object) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootState>) => ({
-  fetchEvents: (recipientId: CareRecipientId) => dispatch(fetchEvents(recipientId)),
+  fetchEvents: (recipientId: CareRecipientId, pageNb: number) => dispatch(fetchEvents(recipientId, pageNb)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TableView) as React.ComponentClass<{}>;

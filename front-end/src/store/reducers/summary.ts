@@ -1,7 +1,7 @@
 import { EventType } from '@App/types';
-import { FetchSummaryAction, SUMMARY_FETCHED } from '../types';
+import { SummaryFetchedAction, SUMMARY_FETCHED } from '../types';
 
-const summary = (state = [] as Array<EventType>, action: FetchSummaryAction) => {
+const summary = (state = [] as Array<EventType>, action: SummaryFetchedAction) => {
   switch (action.type) {
     case SUMMARY_FETCHED.SUCCESS:
       return action.payload;

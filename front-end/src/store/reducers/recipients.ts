@@ -1,7 +1,7 @@
 import { CareRecipient } from '@App/types';
-import { FetchRecipientsAction, RECIPIENTS_FETCHED } from '../types';
+import { RecipientsFetchedAction, RECIPIENTS_FETCHED } from '../types';
 
-const recipients = (state = [] as Array<CareRecipient>, action: FetchRecipientsAction) => {
+const recipients = (state = [] as Array<CareRecipient>, action: RecipientsFetchedAction) => {
   switch (action.type) {
     case RECIPIENTS_FETCHED.SUCCESS:
       return action.payload;

@@ -1,5 +1,54 @@
+import { call, put, takeLatest, all } from 'redux-saga/effects';
+import axios from 'axios';
+
+import { FETCH_EVENTS, FETCH_SUMMARY, FetchEventsAction, FetchSummaryAction } from '../types';
+
+function* fetchRecipients() {
+  try {
+    const recipientsResults = yield call(axios.get, '/recipients');
+    yield put({type: 'RECIPIENTS_FETCH_SUCCEEDED', recipients: recipientsResults.data.recipients});
+  } catch (e) {
+    yield put({type: 'RECIPIENTS_FETCH_FAILED', message: e.message});
+  }
+}
+
+function* fetchEventTypesSummary(action: FetchSummaryAction) {
+  try {
+    const evTypSumResults = yield call(axios.get, `/recipients/${action.payload}/summary`);
+    yield put({type: 'SUMMARY_FETCH_SUCCEEDED', eventTypes: evTypSumResults.data.eventTypes});
+  } catch (e) {
+    yield put({type: 'SUMMARY_FETCH_FAILED', message: e.message});
+  }
+}
+
+function* watchFetchSummary() {
+  yield takeLatest(FETCH_SUMMARY, fetchEventTypesSummary);
+}
+
+function* fetchEvents(action: FetchEventsAction) {
+  try {
+    const eventsResults = yield call(axios.get, `/recipients/${action.payload}/events`);
+    yield put({type: 'EVENTS_FETCH_SUCCEEDED', events: eventsResults.data.eventTypes});
+  } catch (e) {
+    yield put({type: 'EVENTS_FETCH_FAILED', message: e.message});
+  }
+}
+
+function* watchFetchEvents() {
+  yield takeLatest(FETCH_EVENTS, fetchEvents);
+}
+
+function* helloSaga() {
+  yield call(alert, 'Hello :D');
+}
+
 function* initSaga() {
-  yield [];
+  yield all([
+    fetchRecipients(),
+    helloSaga(),
+    watchFetchSummary(),
+    watchFetchEvents()
+  ]);
 }
 
 export default initSaga;

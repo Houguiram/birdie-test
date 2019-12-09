@@ -3,6 +3,8 @@ import styled, { createGlobalStyle } from 'styled-components';
 import { RootState } from '@App/store/reducers';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import { getCurrentRecipientId, getCurrentView } from '@App/store/selectors';
+
 import { Heading } from 'react-bulma-components';
 import 'react-bulma-components/dist/react-bulma-components.min.css';
 import axios from 'axios';
@@ -14,15 +16,16 @@ import GraphsView from '@App/components/pages/GraphsView';
 import SideMenu from '@App/components/SideMenu';
 import ErrorBanner from '@App/components/ErrorBanner';
 
-export type Tab = 'TABLE' | 'TIMELINE' | 'GRAPHS';
-export type CareRecipient = { id: string, name: string };
+import { Tab, CareRecipient, CareRecipientId } from '@App/types';
+import { setView } from '@App/store/actions';
 
 interface AppProps {
-
+  currentRecipientId: CareRecipientId;
+  currentView: Tab;
+  setView: Function;
 }
 
 interface AppState {
-  tab: Tab;
   recipients: Array<CareRecipient>;
   currentRecipientId: string;
   isLoading: boolean;
@@ -59,7 +62,6 @@ class App extends React.Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
     this.state = {
-      tab: 'TABLE',
       recipients: [],
       currentRecipientId: '',
       isLoading: false,
@@ -85,9 +87,9 @@ class App extends React.Component<AppProps, AppState> {
     this.setState({...this.state, error: error});
   }
 
-  setTab = (newTab: Tab) => {
-    this.setState({...this.state, tab: newTab});
-  }
+  // setTab = (newTab: Tab) => {
+  //   this.setState({...this.state, tab: newTab});
+  // }
 
   setRecipients = (newRecipients: Array<CareRecipient>) => {
     this.setState({...this.state, recipients: newRecipients});
@@ -110,20 +112,20 @@ class App extends React.Component<AppProps, AppState> {
             <Background />
             <TopBar />
             <SideMenu
-              currentTab={this.state.tab}
-              setTab={this.setTab}
+              currentTab={this.props.currentView}
+              setTab={(view: Tab) => this.props.setView(view)}
               recipients={this.state.recipients}
               currentRecipient={this.state.currentRecipientId}
               setCurrentRecipient={this.setCurrentRecipient}
             />
             <AppContainer>
-              {this.state.tab === 'TABLE' ? (
+              {this.props.currentView === 'TABLE' ? (
                 <>
                   <Heading>All events</Heading>
                   <TableView recipientId={this.state.currentRecipientId} />
                 </>
               ) : (
-                this.state.tab === 'TIMELINE' ? (
+                this.props.currentView === 'TIMELINE' ? (
                   <>
                     <Heading>Visits timeline</Heading>
                     <TimelineView />
@@ -143,8 +145,13 @@ class App extends React.Component<AppProps, AppState> {
   }
 }
 
-const mapStateToProps = (state: RootState, ownProps: object) => {};
+const mapStateToProps = (state: RootState, ownProps: object) => ({
+  currentRecipientId: getCurrentRecipientId(state),
+  currentView: getCurrentView(state)
+});
 
-const mapDispatchToProps = (dispatch: Dispatch<RootState>) => {};
+const mapDispatchToProps = (dispatch: Dispatch<RootState>) => ({
+  setView: (view: Tab) => dispatch(setView(view))
+});
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App) as React.ComponentClass<{}>;

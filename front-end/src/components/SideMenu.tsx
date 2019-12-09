@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Menu } from 'react-bulma-components';
-import { CareRecipient, Tab } from '@App/components/app/App';
+import { CareRecipient, Tab } from '@App/types/index';
 
 interface SideMenuProps {
   currentTab: Tab;

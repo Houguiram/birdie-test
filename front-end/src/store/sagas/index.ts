@@ -1,14 +1,25 @@
 import { call, put, takeLatest, all } from 'redux-saga/effects';
 import axios from 'axios';
 
-import { FETCH_EVENTS, FETCH_SUMMARY, FetchEventsAction, FetchSummaryAction } from '../types';
+import {
+  FETCH_EVENTS,
+  FETCH_SUMMARY,
+  FetchEventsAction,
+  FetchRecipientsAction,
+  FetchSummaryAction,
+  RECIPIENTS_FETCHED
+} from '../types';
+import { CareRecipient } from '@App/types';
 
 function* fetchRecipients() {
   try {
     const recipientsResults = yield call(axios.get, '/recipients');
-    yield put({type: 'RECIPIENTS_FETCH_SUCCEEDED', recipients: recipientsResults.data.recipients});
+    yield put({
+      type: RECIPIENTS_FETCHED.SUCCESS,
+      payload: recipientsResults.data.recipients as Array<CareRecipient>
+    } as FetchRecipientsAction);
   } catch (e) {
-    yield put({type: 'RECIPIENTS_FETCH_FAILED', message: e.message});
+    yield put({type: RECIPIENTS_FETCHED.FAIL, payload: e.message});
   }
 }
 
@@ -38,14 +49,9 @@ function* watchFetchEvents() {
   yield takeLatest(FETCH_EVENTS, fetchEvents);
 }
 
-function* helloSaga() {
-  yield call(alert, 'Hello :D');
-}
-
 function* initSaga() {
   yield all([
     fetchRecipients(),
-    helloSaga(),
     watchFetchSummary(),
     watchFetchEvents()
   ]);

@@ -3,11 +3,10 @@ import styled, { createGlobalStyle } from 'styled-components';
 import { RootState } from '@App/store/reducers';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { getCurrentRecipientId, getCurrentView } from '@App/store/selectors';
+import { getCurrentRecipientId, getCurrentView, getRecipients } from '@App/store/selectors';
 
 import { Heading } from 'react-bulma-components';
 import 'react-bulma-components/dist/react-bulma-components.min.css';
-import axios from 'axios';
 
 import TopBar from '@App/components/TopBar';
 import TableView from '@App/components/pages/TableView';
@@ -24,10 +23,10 @@ interface AppProps {
   currentView: Tab;
   setView: Function;
   setCurrentRecipientId: Function;
+  recipients: Array<CareRecipient>;
 }
 
 interface AppState {
-  recipients: Array<CareRecipient>;
   isLoading: boolean;
   error?: string;
 }
@@ -62,7 +61,6 @@ class App extends React.Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
     this.state = {
-      recipients: [],
       isLoading: false,
       error: undefined
     };
@@ -70,10 +68,6 @@ class App extends React.Component<AppProps, AppState> {
 
   componentDidMount(): void {
     this.setLoading(true);
-    axios.get('/recipients')
-      .then((result) => result.data)
-      .then((data) => this.setRecipients(data.recipients))
-      .catch((e) => this.setError(e.toString()));
     this.setLoading(false);
   }
 
@@ -85,13 +79,9 @@ class App extends React.Component<AppProps, AppState> {
     this.setState({...this.state, error: error});
   }
 
-  setRecipients = (newRecipients: Array<CareRecipient>) => {
-    this.setState({...this.state, recipients: newRecipients});
-  }
-
   render() {
     return (
-      this.state.isLoading ? (
+      !this.props.recipients ? (
         <div>Loading...</div>
       ) : (
         this.state.error ? (
@@ -104,29 +94,32 @@ class App extends React.Component<AppProps, AppState> {
             <SideMenu
               currentTab={this.props.currentView}
               setTab={(view: Tab) => this.props.setView(view)}
-              recipients={this.state.recipients}
+              recipients={this.props.recipients}
               currentRecipient={this.props.currentRecipientId}
               setCurrentRecipient={(id: CareRecipientId) => this.props.setCurrentRecipientId(id)}
             />
             <AppContainer>
-              {this.props.currentView === 'TABLE' ? (
-                <>
-                  <Heading>All events</Heading>
-                  <TableView recipientId={this.props.currentRecipientId} />
-                </>
-              ) : (
-                this.props.currentView === 'TIMELINE' ? (
+
+              {this.props.currentRecipientId ? (
+                this.props.currentView === 'TABLE' ? (
                   <>
-                    <Heading>Visits timeline</Heading>
-                    <TimelineView />
+                    <Heading>All events</Heading>
+                    <TableView recipientId={this.props.currentRecipientId} />
                   </>
                 ) : (
-                  <>
-                    <Heading>Graphs</Heading>
-                    <GraphsView />
-                  </>
+                  this.props.currentView === 'TIMELINE' ? (
+                    <>
+                      <Heading>Visits timeline</Heading>
+                      <TimelineView />
+                    </>
+                  ) : (
+                    <>
+                      <Heading>Graphs</Heading>
+                      <GraphsView />
+                    </>
+                  )
                 )
-              )}
+              ) : (<Heading>Please select a care recipient.</Heading>)}
             </AppContainer>
           </>
         )
@@ -137,7 +130,8 @@ class App extends React.Component<AppProps, AppState> {
 
 const mapStateToProps = (state: RootState, ownProps: object) => ({
   currentRecipientId: getCurrentRecipientId(state),
-  currentView: getCurrentView(state)
+  currentView: getCurrentView(state),
+  recipients: getRecipients(state)
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootState>) => ({

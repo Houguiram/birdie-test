@@ -10,10 +10,12 @@ eventController.get('/event-types', async (_, res) => {
   const conn = await connection(dbConfig);
   const results = await query(conn, 'select event_type, count(*) from events group by event_type');
   res.status(200).json({results});
+  conn.end();
 });
 
 eventController.get('/events', async (_, res) => {
   const conn = await connection(dbConfig);
   const results = await query(conn, 'select id, caregiver_id, care_recipient_id, timestamp, event_type from events order by timestamp  asc');
   res.status(200).json({results});
+  conn.end();
 });

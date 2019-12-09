@@ -10,7 +10,6 @@ import 'react-bulma-components/dist/react-bulma-components.min.css';
 
 import TopBar from '@App/components/TopBar';
 import TableView from '@App/components/pages/TableView';
-import TimelineView from '@App/components/pages/TimelineView';
 import GraphsView from '@App/components/pages/GraphsView';
 import SideMenu from '@App/components/SideMenu';
 import ErrorBanner from '@App/components/ErrorBanner';
@@ -107,19 +106,11 @@ class App extends React.Component<AppProps, AppState> {
                     <TableView />
                   </>
                 ) : (
-                  this.props.currentView === 'TIMELINE' ? (
-                    <>
-                      <Heading>Visits timeline</Heading>
-                      <TimelineView />
-                    </>
-                  ) : (
-                    <>
-                      <Heading>Summary</Heading>
-                      <GraphsView />
-                    </>
-                  )
-                )
-              ) : (<Heading>Please select a care recipient.</Heading>)}
+                  <>
+                    <Heading>Summary</Heading>
+                    <GraphsView />
+                  </>
+                )) : (<Heading>Please select a care recipient.</Heading>)}
             </AppContainer>
           </>
         )

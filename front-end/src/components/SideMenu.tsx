@@ -38,9 +38,6 @@ function SideMenu({currentTab, recipients, currentRecipient, setCurrentRecipient
           }
         </Menu.List>
         <Menu.List title="Views">
-          <Menu.List.Item active={currentTab === 'TIMELINE'} onClick={() => setTab('TIMELINE')}>
-            Visits timeline
-          </Menu.List.Item>
           <Menu.List.Item active={currentTab === 'TABLE'} onClick={() => setTab('TABLE')}>
             All events
           </Menu.List.Item>

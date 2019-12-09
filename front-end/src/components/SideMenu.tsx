@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Menu } from 'react-bulma-components';
-import { CareRecipient, Tab } from '@App/components/app/App';
+import { CareRecipient, Tab } from '@App/types/index';
 
 interface SideMenuProps {
   currentTab: Tab;
@@ -45,7 +45,7 @@ function SideMenu({currentTab, recipients, currentRecipient, setCurrentRecipient
             All events
           </Menu.List.Item>
           <Menu.List.Item active={currentTab === 'GRAPHS'} onClick={() => setTab('GRAPHS')}>
-            Graphs
+            Summary
           </Menu.List.Item>
         </Menu.List>
       </Menu>

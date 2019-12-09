@@ -3,9 +3,10 @@ import styled, { createGlobalStyle } from 'styled-components';
 import { RootState } from '@App/store/reducers';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import { getCurrentRecipientId, getCurrentView, getRecipients } from '@App/store/selectors';
+
 import { Heading } from 'react-bulma-components';
 import 'react-bulma-components/dist/react-bulma-components.min.css';
-import axios from 'axios';
 
 import TopBar from '@App/components/TopBar';
 import TableView from '@App/components/pages/TableView';
@@ -14,17 +15,18 @@ import GraphsView from '@App/components/pages/GraphsView';
 import SideMenu from '@App/components/SideMenu';
 import ErrorBanner from '@App/components/ErrorBanner';
 
-export type Tab = 'TABLE' | 'TIMELINE' | 'GRAPHS';
-export type CareRecipient = { id: string, name: string };
+import { Tab, CareRecipient, CareRecipientId } from '@App/types';
+import { setRecipient, setView } from '@App/store/actions';
 
 interface AppProps {
-
+  currentRecipientId: CareRecipientId;
+  currentView: Tab;
+  setView: Function;
+  setCurrentRecipientId: Function;
+  recipients: Array<CareRecipient>;
 }
 
 interface AppState {
-  tab: Tab;
-  recipients: Array<CareRecipient>;
-  currentRecipientId: string;
   isLoading: boolean;
   error?: string;
 }
@@ -59,9 +61,6 @@ class App extends React.Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
     this.state = {
-      tab: 'TABLE',
-      recipients: [],
-      currentRecipientId: '',
       isLoading: false,
       error: undefined
     };
@@ -69,11 +68,6 @@ class App extends React.Component<AppProps, AppState> {
 
   componentDidMount(): void {
     this.setLoading(true);
-    axios.get('/recipients')
-      .then((result) => result.data)
-      .then((data) => this.setRecipients(data.recipients))
-      .then((_) => this.setCurrentRecipient(this.state.recipients[0].id))
-      .catch((e) => this.setError(e.toString()));
     this.setLoading(false);
   }
 
@@ -85,21 +79,9 @@ class App extends React.Component<AppProps, AppState> {
     this.setState({...this.state, error: error});
   }
 
-  setTab = (newTab: Tab) => {
-    this.setState({...this.state, tab: newTab});
-  }
-
-  setRecipients = (newRecipients: Array<CareRecipient>) => {
-    this.setState({...this.state, recipients: newRecipients});
-  }
-
-  setCurrentRecipient = (recipientId: string) => {
-    this.setState({...this.state, currentRecipientId: recipientId});
-  }
-
   render() {
     return (
-      this.state.isLoading || !this.state.currentRecipientId ? (
+      !this.props.recipients ? (
         <div>Loading...</div>
       ) : (
         this.state.error ? (
@@ -110,31 +92,34 @@ class App extends React.Component<AppProps, AppState> {
             <Background />
             <TopBar />
             <SideMenu
-              currentTab={this.state.tab}
-              setTab={this.setTab}
-              recipients={this.state.recipients}
-              currentRecipient={this.state.currentRecipientId}
-              setCurrentRecipient={this.setCurrentRecipient}
+              currentTab={this.props.currentView}
+              setTab={(view: Tab) => this.props.setView(view)}
+              recipients={this.props.recipients}
+              currentRecipient={this.props.currentRecipientId}
+              setCurrentRecipient={(id: CareRecipientId) => this.props.setCurrentRecipientId(id)}
             />
             <AppContainer>
-              {this.state.tab === 'TABLE' ? (
-                <>
-                  <Heading>All events</Heading>
-                  <TableView recipientId={this.state.currentRecipientId} />
-                </>
-              ) : (
-                this.state.tab === 'TIMELINE' ? (
+
+              {this.props.currentRecipientId ? (
+                this.props.currentView === 'TABLE' ? (
                   <>
-                    <Heading>Visits timeline</Heading>
-                    <TimelineView />
+                    <Heading>All events</Heading>
+                    <TableView recipientId={this.props.currentRecipientId} />
                   </>
                 ) : (
-                  <>
-                    <Heading>Graphs</Heading>
-                    <GraphsView />
-                  </>
+                  this.props.currentView === 'TIMELINE' ? (
+                    <>
+                      <Heading>Visits timeline</Heading>
+                      <TimelineView />
+                    </>
+                  ) : (
+                    <>
+                      <Heading>Summary</Heading>
+                      <GraphsView />
+                    </>
+                  )
                 )
-              )}
+              ) : (<Heading>Please select a care recipient.</Heading>)}
             </AppContainer>
           </>
         )
@@ -143,8 +128,15 @@ class App extends React.Component<AppProps, AppState> {
   }
 }
 
-const mapStateToProps = (state: RootState, ownProps: object) => {};
+const mapStateToProps = (state: RootState, ownProps: object) => ({
+  currentRecipientId: getCurrentRecipientId(state),
+  currentView: getCurrentView(state),
+  recipients: getRecipients(state)
+});
 
-const mapDispatchToProps = (dispatch: Dispatch<RootState>) => {};
+const mapDispatchToProps = (dispatch: Dispatch<RootState>) => ({
+  setView: (view: Tab) => dispatch(setView(view)),
+  setCurrentRecipientId: (id: CareRecipientId) => dispatch(setRecipient(id))
+});
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App) as React.ComponentClass<{}>;

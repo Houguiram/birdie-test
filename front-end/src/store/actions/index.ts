@@ -1,5 +1,7 @@
 import {
+  FETCH_EVENTS,
   FETCH_SUMMARY,
+  FetchEventsAction,
   FetchSummaryAction,
   SET_RECIPIENT,
   SET_VIEW,
@@ -20,5 +22,10 @@ export const setRecipient = (recipientId: CareRecipientId): SetRecipientAction =
 
 export const fetchSummary = (recipientId: CareRecipientId): FetchSummaryAction => ({
   type: FETCH_SUMMARY,
+  payload: recipientId
+});
+
+export const fetchEvents = (recipientId: CareRecipientId): FetchEventsAction => ({
+  type: FETCH_EVENTS,
   payload: recipientId
 });

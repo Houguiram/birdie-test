@@ -1,45 +1,34 @@
 import * as React from 'react';
 import { Table } from 'react-bulma-components';
 import 'react-bulma-components/dist/react-bulma-components.min.css';
-import { useState } from 'react';
 import { useEffect } from 'react';
-import axios from 'axios';
 import { sentenceCase } from 'sentence-case';
 import ErrorBanner from '@App/components/ErrorBanner';
+import { RootState } from '@App/store/reducers';
+import { getCurrentRecipientId, getEvents } from '@App/store/selectors';
+import { Dispatch } from 'redux';
+import { CareRecipientId, Event } from '@App/types';
+import { fetchEvents } from '@App/store/actions';
+import { connect } from 'react-redux';
 
-type Event = {
-  id: string;
-  caregiver_id: string;
-  timestamp: string;
-  event_type: string;
-};
+interface TableViewProps {
+  events: Array<Event>;
+  currentRecipientId: CareRecipientId;
+  fetchEvents: Function;
+}
 
-function TableView({recipientId}: { recipientId: string }) {
-  const [events, setEvents] = useState([] as Array<Event>);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(undefined);
+function TableView({...props}: TableViewProps) {
   useEffect(
     () => {
-      const fetchEvents = async () => {
-        setIsLoading(true);
-        const result = await axios('/recipients/' + recipientId + '/events');
-        setEvents(result.data.results);
-        setIsLoading(false);
-      };
-      try {
-        fetchEvents();
-      } catch (e) {
-        setError(e.toString());
-        setIsLoading(false);
-      }
+      props.fetchEvents(props.currentRecipientId);
     },
-    [recipientId]);
+    [props.currentRecipientId]);
   return (
-    isLoading ? (
+    !props.events ? (
       <div>Loading...</div>
     ) : (
-      error ? (
-        <ErrorBanner message={error} />
+      typeof props.events === 'string' ? (
+        <ErrorBanner message={props.events} />
       ) : (
         <Table>
           <thead>
@@ -50,7 +39,7 @@ function TableView({recipientId}: { recipientId: string }) {
           </tr>
           </thead>
           <tbody>
-          {events.map(event => (
+          {props.events.map(event => (
             <tr key={event.id}>
               <th>{sentenceCase(event.event_type)}</th>
               <td>{event.timestamp}</td>
@@ -64,4 +53,13 @@ function TableView({recipientId}: { recipientId: string }) {
   );
 }
 
-export default TableView;
+const mapStateToProps = (state: RootState, ownProps: object) => ({
+  events: getEvents(state),
+  currentRecipientId: getCurrentRecipientId(state),
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<RootState>) => ({
+  fetchEvents: (recipientId: CareRecipientId) => dispatch(fetchEvents(recipientId)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(TableView) as React.ComponentClass<{}>;

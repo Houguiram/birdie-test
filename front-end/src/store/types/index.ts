@@ -16,6 +16,11 @@ export const SUMMARY_FETCHED = {
   FAIL: 'SUMMARY_FETCH_FAILED'
 };
 
+export const EVENTS_FETCHED = {
+  SUCCESS: 'EVENTS_FETCH_SUCCEEDED',
+  FAIL: 'EVENTS_FETCH_FAILED'
+};
+
 export interface FetchRecipientsAction {
   type: typeof RECIPIENTS_FETCHED.SUCCESS;
   payload: Array<CareRecipient> | string;
@@ -27,8 +32,8 @@ export interface FetchSummaryAction {
 }
 
 export interface FetchEventsAction {
-  type: typeof FETCH_EVENTS;
-  payload: CareRecipientId;
+  type: typeof EVENTS_FETCHED.SUCCESS;
+  payload: Array<Event> | string;
 }
 
 export interface SetViewAction {

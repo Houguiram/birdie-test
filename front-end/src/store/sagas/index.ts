@@ -2,6 +2,7 @@ import { call, put, takeLatest, all } from 'redux-saga/effects';
 import axios from 'axios';
 
 import {
+  EVENTS_FETCHED,
   FETCH_EVENTS,
   FETCH_SUMMARY,
   FetchEventsAction,
@@ -45,9 +46,9 @@ function* watchFetchSummary() {
 function* fetchEvents(action: FetchEventsAction) {
   try {
     const eventsResults = yield call(axios.get, `/recipients/${action.payload}/events`);
-    yield put({type: 'EVENTS_FETCH_SUCCEEDED', events: eventsResults.data.eventTypes});
+    yield put({type: EVENTS_FETCHED.SUCCESS, payload: eventsResults.data.results});
   } catch (e) {
-    yield put({type: 'EVENTS_FETCH_FAILED', message: e.message});
+    yield put({type: EVENTS_FETCHED.FAIL, payload: e.message});
   }
 }
 

@@ -12,7 +12,7 @@ import {
 import { CareRecipient, RawEventType } from '@App/types';
 import { sentenceCase } from 'sentence-case';
 
-function* fetchRecipients() {
+export function* fetchRecipients() {
   try {
     const recipientsResults = yield call(axios.get, '/recipients');
     yield put({
@@ -24,7 +24,7 @@ function* fetchRecipients() {
   }
 }
 
-function* fetchEventTypesSummary(action: SummaryFetchedAction) {
+export function* fetchEventTypesSummary(action: SummaryFetchedAction) {
   try {
     const evTypSumResults = yield call(axios.get, `/recipients/${action.payload}/summary`);
     yield put({
@@ -38,11 +38,11 @@ function* fetchEventTypesSummary(action: SummaryFetchedAction) {
   }
 }
 
-function* watchFetchSummary() {
+export function* watchFetchSummary() {
   yield takeLatest(FETCH_SUMMARY, fetchEventTypesSummary);
 }
 
-function* fetchEvents(action: FetchEventsAction) {
+export function* fetchEvents(action: FetchEventsAction) {
   try {
     const query = `/recipients/${action.payload.recipientId}/events/${action.payload.pageNb}`;
     const eventsResults = yield call(axios.get, query);
@@ -52,7 +52,7 @@ function* fetchEvents(action: FetchEventsAction) {
   }
 }
 
-function* watchFetchEvents() {
+export function* watchFetchEvents() {
   yield takeLatest(FETCH_EVENTS, fetchEvents);
 }
 

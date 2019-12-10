@@ -1,14 +1,14 @@
-import currentRecipient from "./currentRecipient";
+import currentRecipient from './currentRecipient';
 import {
   EVENTS_FETCHED,
   EventsFetchedAction, RECIPIENTS_FETCHED,
   RecipientsFetchedAction,
   SET_RECIPIENT,
   SetRecipientAction, SUMMARY_FETCHED, SummaryFetchedAction
-} from "@App/store/types";
-import events from "./events";
-import recipients from "./recipients";
-import summary from "./summary";
+} from '@App/store/types';
+import events from './events';
+import recipients from './recipients';
+import summary from './summary';
 
 describe('currentRecipients reducer', () => {
   it('should return the initial state', () => {

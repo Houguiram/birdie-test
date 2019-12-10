@@ -1,7 +1,7 @@
 import { fetchEvents, fetchEventTypesSummary, fetchRecipients, watchFetchEvents, watchFetchSummary } from './index';
 import { call, takeLatest } from 'redux-saga/effects';
 import axios from 'axios';
-import { FETCH_EVENTS, FETCH_SUMMARY } from "@App/store/types";
+import { FETCH_EVENTS, FETCH_SUMMARY } from '@App/store/types';
 
 describe('When fetching recipients', () => {
   const gen = fetchRecipients();
